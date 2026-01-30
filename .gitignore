@@ -1,0 +1,13 @@
+node_modules
+dist
+build
+builder_cache
+.DS_Store
+Thumbs.db
+*.log
+.env
+.idea
+.vscode
+*.swo
+*.swp
+build_*.txt
