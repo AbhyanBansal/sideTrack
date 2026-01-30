@@ -35,6 +35,15 @@ function createWindow() {
     }
 
     mainWindow.on('closed', () => (mainWindow = null));
+
+    // Re-assert always on top when restored or focused to prevent other windows from blocking it
+    mainWindow.on('restore', () => {
+        mainWindow.setAlwaysOnTop(true);
+    });
+
+    mainWindow.on('focus', () => {
+        mainWindow.setAlwaysOnTop(true);
+    });
 }
 
 app.on('ready', createWindow);
