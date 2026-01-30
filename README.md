@@ -30,7 +30,6 @@ Whether you're listening to your favorite lo-fi beats or dedicated tracks, sideT
 
 - **📼 Dynamic Cassette UI**: Watch the reels spin as your music plays. A fully animated, interactive cassette experience.
 - **💿 Vinyl Album Selector**: Browse your collection with a 3D-style vinyl record carousel.
-- **❤️ Love Screen**: A dedicated space for special songs and messages (Easter Egg included!).
 - **🌑 Neon Dark Mode**: A carefully crafted UI that pops on your screen without straining your eyes.
 - **📂 Smart Library**: Easily manage your offline music collection. Scan, refresh, and clean your library with ease.
 - **🔊 High-Quality Audio**: Built on `mpv` for robust and high-fidelity text-to-speech and audio playback.
