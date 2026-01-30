@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const fs = require('fs');
 const db = require('./db');
 const scanner = require('./scanner');
 const path = require('path');
@@ -76,3 +77,28 @@ ipcMain.handle('get-folders', () => db.getFolders());
 ipcMain.handle('get-songs-by-artist', (event, artist) => db.getSongsByArtist(artist));
 ipcMain.handle('get-songs-by-album', (event, album) => db.getSongsByAlbum(album));
 ipcMain.handle('get-songs-by-folder', (event, folder) => db.getSongsByFolder(folder));
+
+ipcMain.handle('refresh-library', async () => {
+    // 1. Sync Deletions
+    const allSongs = db.getAllSongs();
+    for (const song of allSongs) {
+        if (!fs.existsSync(song.path)) {
+            db.deleteSong(song.id);
+        }
+    }
+
+    // 2. Sync Additions (Rescan existing folders)
+    const folders = db.getFolders();
+    for (const folder of folders) {
+        if (fs.existsSync(folder)) {
+            await scanner.scanDirectory(folder, mainWindow);
+        }
+    }
+
+    return db.getAllSongs();
+});
+
+ipcMain.handle('clean-library', () => {
+    db.clearAllSongs();
+    return [];
+});

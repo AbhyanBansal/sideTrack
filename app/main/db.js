@@ -68,6 +68,12 @@ module.exports = {
   getSongsByAlbum: (album) => {
     return db.prepare('SELECT * FROM songs WHERE album = ? ORDER BY track_no ASC, title ASC').all(album); // Assumes we might add track_no later, but works for now
   },
+  deleteSong: (id) => {
+    db.prepare('DELETE FROM songs WHERE id = ?').run(id);
+  },
+  clearAllSongs: () => {
+    db.prepare('DELETE FROM songs').run();
+  },
   getSongsByFolder: (folderPath) => {
     // SQLite doesn't have a simple "starts with" for paths that handles directory boundaries perfectly,
     // but for now we can select all and filter in JS or use LIKE with caution.

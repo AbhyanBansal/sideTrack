@@ -14,7 +14,9 @@ import {
     ChevronLeft,
     Users,
     Disc,
-    Folder
+    Folder,
+    RotateCw,
+    Trash2
 } from 'lucide-react';
 
 const { ipcRenderer } = window.require('electron');
@@ -119,6 +121,22 @@ function App() {
         const updatedSongs = await ipcRenderer.invoke('scan-folder');
         if (updatedSongs) {
             setSongs(updatedSongs);
+        }
+    };
+
+    const handleRefreshLibrary = async () => {
+        const updatedSongs = await ipcRenderer.invoke('refresh-library');
+        setSongs(updatedSongs || []);
+    };
+
+    const handleCleanLibrary = async () => {
+        // Simple confirmation before wiping data
+        if (window.confirm('Clean Library? This will remove all songs and folders.')) {
+            await ipcRenderer.invoke('clean-library');
+            setSongs([]);
+            setArtists([]);
+            setAlbums([]);
+            setFolders([]);
         }
     };
 
@@ -626,13 +644,30 @@ function App() {
                                     </span>
                                 </div>
                                 {getCurrentView().type === 'home' && (
-                                    <button
-                                        onClick={handleAddFolder}
-                                        className="text-neutral-400 hover:text-[#ff4d00] transition-colors"
-                                        title="Add Folder"
-                                    >
-                                        <FolderPlus size={14} />
-                                    </button>
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            onClick={handleRefreshLibrary}
+                                            className="text-neutral-400 hover:text-green-500 transition-colors"
+                                            title="Refresh Library"
+                                        >
+                                            <RotateCw size={14} />
+                                        </button>
+                                        <button
+                                            onClick={handleCleanLibrary}
+                                            className="text-neutral-400 hover:text-red-500 transition-colors"
+                                            title="Clean Library"
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
+                                        <div className="w-[1px] h-3 bg-neutral-800 mx-1"></div>
+                                        <button
+                                            onClick={handleAddFolder}
+                                            className="text-neutral-400 hover:text-[#ff4d00] transition-colors"
+                                            title="Add Folder"
+                                        >
+                                            <FolderPlus size={14} />
+                                        </button>
+                                    </div>
                                 )}
                             </div>
                             <div className="flex-1 overflow-y-auto">

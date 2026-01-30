@@ -1,5 +1,5 @@
 {
-  "name": "miniplayerapp",
+  "name": "sidetrack",
   "version": "1.0.0",
   "description": "",
   "main": "app/main/main.js",
@@ -12,8 +12,8 @@
     "dist": "electron-builder"
   },
   "build": {
-    "appId": "com.miniplayer.app",
-    "productName": "MiniPlayer",
+    "appId": "com.sidetrack.app",
+    "productName": "SideTrack",
     "directories": {
       "output": "dist"
     },
@@ -35,11 +35,12 @@
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": true
     },
     "extends": null
   },
-  "author": "User",
+  "author": "Abhyan Bansal",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
