@@ -266,6 +266,35 @@ function App() {
     };
 
 
+    // --- Keyboard Shortcuts ---
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            // Ignore if input/textarea is focused (though we don't have many inputs)
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            switch (e.code) {
+                case 'Space':
+                    e.preventDefault(); // Prevent scrolling
+                    togglePlay();
+                    break;
+                case 'ArrowLeft':
+                    handlePrev();
+                    break;
+                case 'ArrowRight':
+                    handleNext();
+                    break;
+                default:
+                    break;
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [togglePlay, handlePrev, handleNext]);
+
+
     // --- Navigation Logic ---
 
     const navigateTo = async (viewType, data = null) => {
