@@ -3,11 +3,59 @@ const fs = require('fs');
 const db = require('./db');
 const scanner = require('./scanner');
 const path = require('path');
-const isDev = require('electron-is-dev');
+// const isDev = require('electron-is-dev');
+
+const logPath = path.join(app.getPath('userData'), 'startup.log');
+
+function log(message) {
+    try {
+        const timestamp = new Date().toISOString();
+        fs.appendFileSync(logPath, `[${timestamp}] ${message}\n`);
+    } catch (error) {
+        // console.error('Failed to write to log', error);
+    }
+}
+
+log('App starting...');
+
+// Set App User Model ID
+app.setAppUserModelId('com.sidetrack.app');
+
+// Global Error Handlers
+process.on('uncaughtException', (error) => {
+    log(`Uncaught Exception: ${error.stack || error}`);
+});
+
+process.on('unhandledRejection', (reason) => {
+    log(`Unhandled Rejection: ${reason}`);
+});
 
 let mainWindow;
 
+// Single Instance Lock
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+    log('Another instance is already running. Quitting.');
+    app.quit();
+} else {
+    app.on('second-instance', (event, commandLine, workingDirectory) => {
+        // Someone tried to run a second instance, we should focus our window.
+        log('Second instance detected. Focusing main window.');
+        if (mainWindow) {
+            if (mainWindow.isMinimized()) mainWindow.restore();
+            mainWindow.focus();
+        }
+    });
+
+    app.on('ready', () => {
+        log('App ready event fired.');
+        createWindow();
+    });
+}
+
 function createWindow() {
+    log('Creating main window...');
     mainWindow = new BrowserWindow({
         width: 350,
         height: 250,
@@ -24,17 +72,23 @@ function createWindow() {
         },
     });
 
+    const isDev = !app.isPackaged;
+
     const startUrl = isDev
         ? 'http://localhost:3000'
         : `file://${path.join(__dirname, '../../build/renderer/index.html')}`;
 
+    log(`Loading URL: ${startUrl}`);
     mainWindow.loadURL(startUrl);
 
     if (isDev) {
         // mainWindow.webContents.openDevTools({ mode: 'detach' });
     }
 
-    mainWindow.on('closed', () => (mainWindow = null));
+    mainWindow.on('closed', () => {
+        log('Main window closed.');
+        mainWindow = null;
+    });
 
     // Re-assert always on top when restored or focused to prevent other windows from blocking it
     mainWindow.on('restore', () => {
@@ -44,11 +98,14 @@ function createWindow() {
     mainWindow.on('focus', () => {
         mainWindow.setAlwaysOnTop(true);
     });
+
+    mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
+        log(`Failed to load: ${errorDescription} (${errorCode})`);
+    });
 }
 
-app.on('ready', createWindow);
-
 app.on('window-all-closed', () => {
+    log('All windows closed.');
     if (process.platform !== 'darwin') {
         app.quit();
     }
