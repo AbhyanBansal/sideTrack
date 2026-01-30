@@ -6,8 +6,11 @@
   "scripts": {
     "start": "concurrently \"npm run dev\" \"npm run electron\"",
     "dev": "vite",
+    "clean": "node scripts/clean.js",
+    "setup:wincodesign": "node scripts/setup-wincodesign.js",
+    "postinstall": "electron-builder install-app-deps",
     "electron": "wait-on tcp:3000 && cross-env NODE_ENV=development electron .",
-    "build": "vite build && cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 electron-builder",
+    "build": "npm run clean && npm run setup:wincodesign && vite build && cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 electron-builder",
     "pack": "electron-builder --dir",
     "dist": "electron-builder"
   },
@@ -25,13 +28,18 @@
     "forceCodeSigning": false,
     "win": {
       "target": "nsis",
-      "verifyUpdateCodeSignature": false
+      "verifyUpdateCodeSignature": false,
+      "icon": "assets/icons/icon.ico"
     },
     "mac": {
       "target": [
         "dmg",
         "zip"
-      ]
+      ],
+      "icon": "assets/icons/icon.icns"
+    },
+    "linux": {
+      "icon": "assets/icons/icon.png"
     },
     "nsis": {
       "oneClick": false,
