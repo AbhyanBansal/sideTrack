@@ -1,4 +1,4 @@
-# sideTrack 🎵
+# SideTrack 🎵
 
 > **A retro-futuristic music player built for those who love the aesthetics of the past with the power of the present.**
 
